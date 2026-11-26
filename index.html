@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#14202b">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Cristallo BTS</title>
+<style>
+:root{--bg:#0f1a23;--card:#182733;--card2:#1f3241;--tx:#e8eef3;--mut:#9fb1bf;--acc:#f2a93b;--acc2:#4fc3c9;--ok:#6fd08c;--bad:#ef6b6b;--bd:#2c4253}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--tx);line-height:1.5;font-size:16px}
+header{position:sticky;top:0;z-index:5;background:#14202b;border-bottom:1px solid var(--bd)}
+header h1{margin:0;padding:12px 16px 4px;font-size:19px}
+header h1 span{color:var(--acc)}
+nav{display:flex;overflow-x:auto;gap:6px;padding:6px 10px 10px}
+nav button{flex:0 0 auto;background:var(--card);color:var(--mut);border:1px solid var(--bd);border-radius:20px;padding:7px 13px;font-size:14px}
+nav button.on{background:var(--acc);color:#1a1205;border-color:var(--acc);font-weight:600}
+main{padding:12px;max-width:760px;margin:auto}
+section{display:none}section.on{display:block}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px}
+h2{font-size:18px;margin:0 0 8px;color:var(--acc)}
+h3{font-size:16px;margin:12px 0 6px;color:var(--acc2)}
+label{display:block;font-size:14px;color:var(--mut);margin:10px 0 4px}
+input,select{width:100%;background:var(--card2);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:10px;font-size:16px}
+.row{display:flex;gap:8px}.row>*{flex:1}
+.btn{display:block;width:100%;margin-top:14px;background:var(--acc);color:#1a1205;border:0;border-radius:12px;padding:13px;font-size:16px;font-weight:700}
+.seg{display:flex;gap:6px;margin-bottom:6px}
+.seg button{flex:1;background:var(--card2);color:var(--mut);border:1px solid var(--bd);border-radius:10px;padding:9px 4px;font-size:13px}
+.seg button.on{background:var(--acc2);color:#062022;font-weight:700}
+.step{border-left:3px solid var(--acc2);padding:6px 10px;margin:10px 0;background:var(--card2);border-radius:0 10px 10px 0}
+.step b.t{color:var(--acc2)}
+.f{font-family:ui-monospace,Consolas,monospace;background:#0b141b;padding:2px 6px;border-radius:6px;white-space:nowrap}
+.fb{display:block;font-family:ui-monospace,Consolas,monospace;background:#0b141b;padding:8px 10px;border-radius:8px;margin:6px 0;overflow-x:auto;white-space:nowrap}
+.res{font-size:18px;font-weight:700;color:var(--ok)}
+.why{color:var(--mut);font-size:14px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{border-bottom:1px solid var(--bd);padding:7px 5px;text-align:left;vertical-align:top}
+th{color:var(--acc2)}
+.tip{background:#2a2210;border:1px solid #5a4518;border-radius:10px;padding:10px;margin:8px 0;font-size:14px}
+.tip b{color:var(--acc)}
+svg{width:100%;max-width:340px;display:block;margin:6px auto}
+.leg{display:flex;flex-wrap:wrap;gap:10px;font-size:13px;justify-content:center}
+.leg i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+sup,sub{font-size:70%}
+.best{color:var(--ok);font-weight:700}
+.btn2{background:var(--card2);color:var(--tx);border:1px solid var(--bd)}
+.pt{display:grid;grid-template-columns:repeat(18,40px);grid-auto-rows:46px;gap:2px;padding-bottom:6px}
+.ptw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.el{border:0;border-radius:5px;padding:2px 0 0;color:#10161b;font-size:15px;font-weight:700;line-height:1.05;text-align:center;cursor:pointer}
+.el small{display:block;font-size:9px;font-weight:500;opacity:.8}
+.el.hl{outline:3px solid #fff;outline-offset:-1px}
+.el.dim{opacity:.25}
+.nuc{display:inline-flex;align-items:center;font-size:30px;font-weight:700}
+.nuc .ns{display:inline-flex;flex-direction:column;font-size:15px;line-height:1.1;text-align:right;margin-right:2px}
+.nuc sup.q{font-size:16px;align-self:flex-start;margin-left:2px}
+.cfg b{color:var(--acc)}
+.chip{display:inline-block;background:var(--card2);border:1px solid var(--bd);border-radius:14px;padding:3px 10px;margin:3px 3px 0 0;font-size:14px;cursor:pointer}
+</style>
+</head>
+<body>
+<header>
+<h1>⚛️ Cristallo <span>BTS</span></h1>
+<nav id="nav">
+<button data-s="calc" class="on">🧮 Calculer ρ</button>
+<button data-s="inv">🔁 Trouver a / r</button>
+<button data-s="id">🔎 Identifier</button>
+<button data-s="struct">🧊 Structures</button>
+<button data-s="cours">📘 Cours</button>
+<button data-s="fiche">📝 Fiche éclair</button>
+<button data-s="atome">🔬 Atome / ion</button>
+<button data-s="tableau">🧪 Tableau périodique</button>
+<button data-s="ions">⚡ Ions courants</button>
+<button data-s="ionique">🧂 Cristal ionique</button>
+<button data-s="coursat">📗 Cours atome</button>
+</nav>
+</header>
+<main>
+
+<!-- ============ CALCUL ρ ============ -->
+<section id="calc" class="on">
+<div class="card">
+<h2>Calculer N, compacité et masse volumique</h2>
+<label>Élément (remplit M, et la structure + r si elle est connue)</label>
+<select id="c_ex"></select>
+<p class="why" id="c_note"></p>
+<label>Structure cristalline</label>
+<select id="c_st" class="stsel"></select>
+<label>Je connais…</label>
+<div class="seg" id="c_know"><button data-v="r" class="on">le rayon r</button><button data-v="a">le paramètre a</button></div>
+<div class="row">
+<div><label id="c_lab">Rayon atomique r</label><input id="c_val" type="number" inputmode="decimal" placeholder="ex : 128"></div>
+<div><label>Unité</label><select id="c_u" class="usel"></select></div>
+</div>
+<div id="c_hcbox" style="display:none">
+<label>Hauteur c (HC) — laisse vide pour c idéal = 1,633·a</label>
+<input id="c_c" type="number" inputmode="decimal" placeholder="même unité que ci-dessus">
+</div>
+<label>Masse molaire M (g/mol)</label>
+<input id="c_M" type="number" inputmode="decimal" placeholder="ex : 63,55 pour le cuivre">
+<button class="btn" id="c_go">Calculer et expliquer</button>
+</div>
+<div id="c_out"></div>
+</section>
+
+<!-- ============ INVERSE ============ -->
+<section id="inv">
+<div class="card">
+<h2>Trouver a et r à partir de ρ</h2>
+<p class="why">Utile quand l'énoncé donne la masse volumique et demande le paramètre de maille ou le rayon atomique.</p>
+<label>Structure cristalline</label>
+<select id="i_st" class="stsel"></select>
+<div class="row">
+<div><label>Masse volumique ρ</label><input id="i_rho" type="number" inputmode="decimal" placeholder="ex : 8960"></div>
+<div><label>Unité</label><select id="i_ru"><option value="kg">kg/m³</option><option value="g">g/cm³</option></select></div>
+</div>
+<label>Masse molaire M (g/mol)</label>
+<input id="i_M" type="number" inputmode="decimal">
+<button class="btn" id="i_go">Calculer et expliquer</button>
+</div>
+<div id="i_out"></div>
+</section>
+
+<!-- ============ IDENTIFIER ============ -->
+<section id="id">
+<div class="card">
+<h2>Identifier la structure</h2>
+<p class="why">On connaît r, M et ρ mesurée : on calcule ρ pour chaque structure et on garde celle qui colle le mieux.</p>
+<div class="row">
+<div><label>Rayon r</label><input id="d_r" type="number" inputmode="decimal"></div>
+<div><label>Unité</label><select id="d_u" class="usel"></select></div>
+</div>
+<label>Masse molaire M (g/mol)</label>
+<input id="d_M" type="number" inputmode="decimal">
+<div class="row">
+<div><label>ρ mesurée</label><input id="d_rho" type="number" inputmode="decimal"></div>
+<div><label>Unité</label><select id="d_ru"><option value="kg">kg/m³</option><option value="g">g/cm³</option></select></div>
+</div>
+<button class="btn" id="d_go">Comparer les structures</button>
+</div>
+<div id="d_out"></div>
+</section>
+
+<!-- ============ STRUCTURES ============ -->
+<section id="struct">
+<div class="card">
+<label>Choisis une structure</label>
+<select id="s_st" class="stsel"></select>
+</div>
+<div id="s_out"></div>
+</section>
+
+<!-- ============ COURS ============ -->
+<section id="cours">
+<div class="card">
+<h2>1. La cohésion de la matière</h2>
+<p>La matière tient ensemble grâce à des <b>forces d'attraction</b> entre ses particules (atomes, ions, molécules). Plus ces liaisons sont fortes, plus il faut d'énergie pour séparer les particules → température de fusion élevée, matériau dur.</p>
+<table>
+<tr><th>Liaison</th><th>Entre…</th><th>Force</th><th>Exemples</th></tr>
+<tr><td><b>Métallique</b></td><td>Ions positifs baignant dans un « nuage » d'électrons libres</td><td>Forte</td><td>Fe, Cu, Al</td></tr>
+<tr><td><b>Ionique</b></td><td>Ions + et − (attraction électrostatique)</td><td>Très forte</td><td>NaCl</td></tr>
+<tr><td><b>Covalente</b></td><td>Atomes qui mettent des électrons en commun</td><td>Très forte</td><td>Diamant, Si</td></tr>
+<tr><td><b>Hydrogène</b></td><td>H lié à O, N ou F ↔ autre molécule</td><td>Faible</td><td>Glace</td></tr>
+<tr><td><b>Van der Waals</b></td><td>Molécules (dipôles)</td><td>Très faible</td><td>Polymères, graphite entre feuillets</td></tr>
+</table>
+<div class="tip"><b>Pourquoi les métaux conduisent :</b> les électrons libres de la liaison métallique se déplacent facilement → bonne conduction électrique et thermique, et les métaux sont ductiles (les plans d'atomes glissent sans casser la liaison).</div>
+<h3>États de la matière solide</h3>
+<p><b>Solide cristallin</b> : atomes rangés de façon ordonnée et périodique (métaux). <b>Solide amorphe</b> : atomes en désordre (verre).</p>
+</div>
+
+<div class="card">
+<h2>2. Vocabulaire du cristal</h2>
+<p><b>Réseau</b> : ensemble de points (nœuds) répétés régulièrement dans l'espace.<br>
+<b>Motif</b> : l'atome (ou groupe d'atomes) placé sur chaque nœud.<br>
+<b>Cristal = réseau + motif.</b><br>
+<b>Maille</b> : le plus petit volume (un cube pour CS, CC, CFC) qui, répété dans les 3 directions, reconstitue tout le cristal.<br>
+<b>Paramètre de maille a</b> : longueur de l'arête du cube.<br>
+<b>Coordinence</b> : nombre de plus proches voisins d'un atome.<br>
+<b>Modèle des sphères dures</b> : on considère les atomes comme des billes de rayon r qui se touchent.</p>
+</div>
+
+<div class="card">
+<h2>3. Multiplicité N (atomes par maille)</h2>
+<p>Un atome placé sur un bord de la maille est <b>partagé</b> avec les mailles voisines. On ne compte que la part qui est dans la maille :</p>
+<table>
+<tr><th>Position</th><th>Partagé entre</th><th>Compte pour</th></tr>
+<tr><td>Sommet (coin)</td><td>8 mailles</td><td><b>1/8</b></td></tr>
+<tr><td>Milieu d'arête</td><td>4 mailles</td><td><b>1/4</b></td></tr>
+<tr><td>Centre de face</td><td>2 mailles</td><td><b>1/2</b></td></tr>
+<tr><td>Intérieur (centre)</td><td>1 maille</td><td><b>1</b></td></tr>
+</table>
+<span class="fb">N = n_sommets×1/8 + n_arêtes×1/4 + n_faces×1/2 + n_intérieur×1</span>
+<p>Un cube a <b>8 sommets</b>, <b>12 arêtes</b>, <b>6 faces</b>.</p>
+</div>
+
+<div class="card">
+<h2>4. Condition de contact (relation a ↔ r)</h2>
+<p>On cherche la direction où les atomes <b>se touchent</b>. Sur cette ligne, on aligne des rayons :</p>
+<table>
+<tr><th>Structure</th><th>Contact selon</th><th>Relation</th></tr>
+<tr><td>CS</td><td>l'arête</td><td><span class="f">a = 2r</span></td></tr>
+<tr><td>CC</td><td>la grande diagonale du cube (a√3)</td><td><span class="f">a√3 = 4r</span></td></tr>
+<tr><td>CFC</td><td>la diagonale d'une face (a√2)</td><td><span class="f">a√2 = 4r</span></td></tr>
+<tr><td>HC</td><td>l'arête de l'hexagone</td><td><span class="f">a = 2r</span></td></tr>
+</table>
+<div class="tip"><b>Retenir :</b> diagonale d'une face d'un carré de côté a = a√2 ; grande diagonale d'un cube = a√3 (Pythagore deux fois).</div>
+</div>
+
+<div class="card">
+<h2>5. Compacité C</h2>
+<p>Fraction du volume de la maille réellement occupée par les atomes (sphères).</p>
+<span class="fb">C = N × (4/3)πr³ / V_maille</span>
+<p>Pour un cube : <span class="f">V_maille = a³</span>. C est <b>sans unité</b>, toujours &lt; 1. Plus C est grand, plus l'empilement est serré.</p>
+<p>CS 0,52 · CC 0,68 · CFC et HC 0,74 (maximum possible pour des sphères identiques).</p>
+</div>
+
+<div class="card">
+<h2>6. Masse volumique ρ</h2>
+<p>Masse de la maille divisée par son volume. La masse d'un atome vaut <span class="f">M / N<sub>A</sub></span>.</p>
+<span class="fb">ρ = N × M / (N_A × a³)</span>
+<p>N<sub>A</sub> = 6,022 × 10²³ mol⁻¹</p>
+<div class="tip"><b>⚠️ Piège n°1 : les unités.</b> Pour avoir ρ en kg/m³ : M en <b>kg/mol</b> (g/mol ÷ 1000) et a en <b>mètres</b> (1 pm = 10⁻¹² m ; 1 nm = 10⁻⁹ m ; 1 Å = 10⁻¹⁰ m). Ne pas oublier de mettre a au cube <b>avec</b> sa puissance de 10 : (10⁻¹²)³ = 10⁻³⁶.<br>1 g/cm³ = 1000 kg/m³.</div>
+</div>
+</section>
+
+<!-- ============ FICHE ============ -->
+<section id="fiche">
+<div class="card">
+<h2>Tout sur une page</h2>
+<table>
+<tr><th></th><th>CS</th><th>CC</th><th>CFC</th><th>HC</th></tr>
+<tr><td>N</td><td>1</td><td>2</td><td>4</td><td>6 (prisme)</td></tr>
+<tr><td>Calcul N</td><td>8×⅛</td><td>8×⅛+1</td><td>8×⅛+6×½</td><td>12×⅙+2×½+3</td></tr>
+<tr><td>Contact</td><td>arête</td><td>diag. cube</td><td>diag. face</td><td>arête hexa</td></tr>
+<tr><td>a(r)</td><td>2r</td><td>4r/√3</td><td>4r/√2 = 2√2r</td><td>2r ; c=1,633a</td></tr>
+<tr><td>Coordinence</td><td>6</td><td>8</td><td>12</td><td>12</td></tr>
+<tr><td>Compacité</td><td>0,52</td><td>0,68</td><td>0,74</td><td>0,74</td></tr>
+<tr><td>Exemples</td><td>Po</td><td>Fe α, Cr, W, Na</td><td>Cu, Al, Au, Ni, Fe γ</td><td>Zn, Mg, Ti</td></tr>
+</table>
+<h3>Formules</h3>
+<span class="fb">C = N·(4/3)πr³ / a³</span>
+<span class="fb">ρ = N·M / (N_A·a³)</span>
+<span class="fb">a = ∛( N·M / (N_A·ρ) )</span>
+<span class="fb">V_HC = (3√3/2)·a²·c</span>
+<h3>Méthode type contrôle</h3>
+<p>1) Dessiner la maille et placer les atomes.<br>2) Compter N avec ⅛, ¼, ½, 1.<br>3) Trouver la direction de contact → relation a↔r.<br>4) Calculer a (convertir en m !).<br>5) Compacité C (sans unité).<br>6) ρ avec M en kg/mol → kg/m³.<br>7) Vérifier l'ordre de grandeur : un métal fait entre ~1 000 et ~22 000 kg/m³ (fer ≈ 7 870, cuivre ≈ 8 960, alu ≈ 2 700).</p>
+</div>
+</section>
+
+<!-- ============ ATOME / ION ============ -->
+<section id="atome">
+<div class="card">
+<h2>Trouver Z, A, N, électrons, charge</h2>
+<p class="why">Remplis ce que tu connais, l'appli complète le reste et explique chaque étape. Avec <b>seulement N</b> (neutrons) ou <b>seulement A</b>, elle liste les éléments possibles.</p>
+<label>Élément (symbole, nom ou numéro) — optionnel</label>
+<input id="a_el" type="text" placeholder="ex : Fe, fer, 26">
+<div class="row">
+<div><label>Z (protons)</label><input id="a_Z" type="number" inputmode="numeric"></div>
+<div><label>A (nucléons)</label><input id="a_A" type="number" inputmode="numeric"></div>
+<div><label>N (neutrons)</label><input id="a_N" type="number" inputmode="numeric"></div>
+</div>
+<div class="row">
+<div><label>Charge (ex : 2+, 3−, 0)</label><input id="a_q" type="text" placeholder="vide = inconnue"></div>
+<div><label>Électrons</label><input id="a_e" type="number" inputmode="numeric"></div>
+</div>
+<div class="row"><button class="btn" id="a_go">Résoudre et expliquer</button><button class="btn btn2" id="a_clr">Effacer</button></div>
+</div>
+<div id="a_out"></div>
+<div class="card">
+<h2>Masse molaire d'une formule</h2>
+<p class="why">Ex : NaCl, Fe2O3, H2SO4, Ca(OH)2, Al2(SO4)3 — attention aux majuscules (Co = cobalt, CO = monoxyde de carbone).</p>
+<input id="m_f" type="text" placeholder="ex : Fe2O3" autocapitalize="off" autocorrect="off">
+<button class="btn" id="m_go">Calculer M</button>
+<div id="m_out"></div>
+</div>
+</section>
+
+<!-- ============ TABLEAU ============ -->
+<section id="tableau">
+<div class="card">
+<h2>Tableau périodique</h2>
+<label>Chercher (nom, symbole ou Z)</label>
+<input id="t_q" type="text" placeholder="ex : cuivre, Cu, 29">
+<p class="why">Touche une case pour ouvrir la fiche complète (configuration, ion formé, isotopes…). Fais glisser le tableau sur le côté.</p>
+<div class="ptw"><div class="pt" id="t_grid"></div></div>
+<div class="leg" id="t_leg"></div>
+</div>
+<div id="t_out"></div>
+</section>
+
+<!-- ============ IONS COURANTS ============ -->
+<section id="ions">
+<div class="card">
+<h2>Comment prévoir l'ion d'un élément</h2>
+<p><b>Règle de l'octet</b> : un atome gagne ou perd des électrons pour avoir <b>8 électrons</b> sur sa couche externe, comme le gaz noble le plus proche. <b>Règle du duet</b> : pour les tout petits (H, Li, Be), le but est d'avoir <b>2 électrons</b> comme l'hélium.</p>
+<table>
+<tr><th>Colonne</th><th>e⁻ de valence</th><th>Ce qu'il fait</th><th>Ion</th><th>Exemples</th></tr>
+<tr><td>1</td><td>1</td><td>perd 1 e⁻</td><td>X⁺</td><td>Na⁺, K⁺, Li⁺</td></tr>
+<tr><td>2</td><td>2</td><td>perd 2 e⁻</td><td>X²⁺</td><td>Mg²⁺, Ca²⁺</td></tr>
+<tr><td>13</td><td>3</td><td>perd 3 e⁻</td><td>X³⁺</td><td>Al³⁺</td></tr>
+<tr><td>14</td><td>4</td><td>ne forme pas d'ion simple (liaisons covalentes)</td><td>—</td><td>C, Si</td></tr>
+<tr><td>15</td><td>5</td><td>gagne 3 e⁻</td><td>X³⁻</td><td>N³⁻, P³⁻</td></tr>
+<tr><td>16</td><td>6</td><td>gagne 2 e⁻</td><td>X²⁻</td><td>O²⁻, S²⁻</td></tr>
+<tr><td>17</td><td>7</td><td>gagne 1 e⁻</td><td>X⁻</td><td>Cl⁻, F⁻, Br⁻</td></tr>
+<tr><td>18</td><td>8 (2 pour He)</td><td>déjà stable</td><td>—</td><td>Ne, Ar</td></tr>
+</table>
+<div class="tip"><b>Astuce :</b> un atome prend le chemin le plus court. Mg a 2 e⁻ de valence : en perdre 2 est plus simple que d'en gagner 6.<br><b>Cation</b> = ion positif (a perdu des e⁻), <b>anion</b> = ion négatif (a gagné des e⁻). Le noyau ne change jamais : Z et N restent les mêmes !</div>
+</div>
+<div class="card">
+<h2>Ions des métaux de transition</h2>
+<p class="why">Ils ne suivent pas l'octet et peuvent former plusieurs ions. Ils perdent d'abord les électrons de la couche la plus externe (4s) avant ceux de 3d.</p>
+<table>
+<tr><th>Ion</th><th>Nom</th><th>Ion</th><th>Nom</th></tr>
+<tr><td>Fe²⁺</td><td>fer II (ferreux)</td><td>Fe³⁺</td><td>fer III (ferrique)</td></tr>
+<tr><td>Cu⁺</td><td>cuivre I</td><td>Cu²⁺</td><td>cuivre II</td></tr>
+<tr><td>Zn²⁺</td><td>zinc</td><td>Ag⁺</td><td>argent</td></tr>
+<tr><td>Ni²⁺</td><td>nickel</td><td>Co²⁺</td><td>cobalt</td></tr>
+<tr><td>Cr³⁺</td><td>chrome III</td><td>Mn²⁺</td><td>manganèse</td></tr>
+<tr><td>Pb²⁺</td><td>plomb</td><td>Sn²⁺</td><td>étain</td></tr>
+</table>
+</div>
+<div class="card">
+<h2>Ions polyatomiques à connaître</h2>
+<table>
+<tr><th>Formule</th><th>Nom</th></tr>
+<tr><td>OH⁻</td><td>hydroxyde</td></tr>
+<tr><td>H₃O⁺</td><td>oxonium</td></tr>
+<tr><td>NH₄⁺</td><td>ammonium</td></tr>
+<tr><td>NO₃⁻</td><td>nitrate</td></tr>
+<tr><td>SO₄²⁻</td><td>sulfate</td></tr>
+<tr><td>CO₃²⁻</td><td>carbonate</td></tr>
+<tr><td>HCO₃⁻</td><td>hydrogénocarbonate</td></tr>
+<tr><td>PO₄³⁻</td><td>phosphate</td></tr>
+<tr><td>MnO₄⁻</td><td>permanganate</td></tr>
+<tr><td>Cr₂O₇²⁻</td><td>dichromate</td></tr>
+<tr><td>CH₃COO⁻</td><td>éthanoate (acétate)</td></tr>
+</table>
+<h3>Écrire la formule d'un solide ionique</h3>
+<p>Le solide est <b>neutre</b> : il faut autant de charges + que de charges −.<br>Ex : Al³⁺ et O²⁻ → 2 Al³⁺ (+6) et 3 O²⁻ (−6) → <b>Al₂O₃</b>.<br>Ca²⁺ et Cl⁻ → <b>CaCl₂</b>. Fe³⁺ et OH⁻ → <b>Fe(OH)₃</b>.</p>
+</div>
+</section>
+
+<!-- ============ CRISTAL IONIQUE ============ -->
+<section id="ionique">
+<div class="card">
+<h2>Cristal ionique (NaCl, CsCl, ZnS)</h2>
+<label>Type de structure</label>
+<select id="x_t"><option value="nacl">Type NaCl (chlorure de sodium)</option><option value="cscl">Type CsCl (chlorure de césium)</option><option value="zns">Type ZnS blende</option></select>
+<div class="row">
+<div><label>r cation r₊ (pm)</label><input id="x_rp" type="number" inputmode="decimal"></div>
+<div><label>r anion r₋ (pm)</label><input id="x_rm" type="number" inputmode="decimal"></div>
+</div>
+<div class="row">
+<div><label>M cation (g/mol)</label><input id="x_Mp" type="number" inputmode="decimal"></div>
+<div><label>M anion (g/mol)</label><input id="x_Mm" type="number" inputmode="decimal"></div>
+</div>
+<button class="btn btn2" id="x_pre">Remplir avec l'exemple type</button>
+<button class="btn" id="x_go">Calculer et expliquer</button>
+</div>
+<div id="x_out"></div>
+</section>
+
+<!-- ============ COURS ATOME ============ -->
+<section id="coursat">
+<div class="card">
+<h2>1. Constitution de l'atome</h2>
+<p>Un atome = un <b>noyau</b> (minuscule, au centre) + des <b>électrons</b> qui tournent autour.<br>Le noyau contient des <b>protons</b> (charge +) et des <b>neutrons</b> (neutres). Protons + neutrons = <b>nucléons</b>.</p>
+<table>
+<tr><th>Particule</th><th>Charge</th><th>Masse (kg)</th></tr>
+<tr><td>Proton</td><td>+e = +1,602×10⁻¹⁹ C</td><td>1,673×10⁻²⁷</td></tr>
+<tr><td>Neutron</td><td>0</td><td>1,675×10⁻²⁷</td></tr>
+<tr><td>Électron</td><td>−e = −1,602×10⁻¹⁹ C</td><td>9,109×10⁻³¹ (≈ 1840 fois plus léger)</td></tr>
+</table>
+<div class="tip"><b>Conséquences :</b> presque toute la masse est dans le noyau → m(atome) ≈ A × 1,67×10⁻²⁷ kg.<br>L'atome (~10⁻¹⁰ m) est 100 000 fois plus grand que son noyau (~10⁻¹⁵ m) : la matière est essentiellement du <b>vide</b> (structure lacunaire).</div>
+</div>
+<div class="card">
+<h2>2. Notation et nombres Z, A, N</h2>
+<p>On écrit un noyau <span class="nuc" style="font-size:22px"><span class="ns" style="font-size:12px"><span>A</span><span>Z</span></span>X</span></p>
+<p><b>Z</b> = numéro atomique = nombre de <b>protons</b>. C'est la carte d'identité : Z définit l'élément (Z = 26 → toujours du fer).<br>
+<b>A</b> = nombre de masse = nombre de <b>nucléons</b> (protons + neutrons).<br>
+<b>N</b> = nombre de <b>neutrons</b>.</p>
+<span class="fb">A = Z + N   ⇔   N = A − Z</span>
+<p>Atome <b>neutre</b> : autant d'électrons que de protons → e⁻ = Z.</p>
+<p><b>Ion</b> : atome qui a gagné ou perdu des électrons (le noyau ne change pas).</p>
+<span class="fb">charge q = Z − nombre d'électrons   ⇔   e⁻ = Z − q</span>
+<p>Ex : Fe³⁺ (Z = 26) → 26 − 3 = <b>23 électrons</b>. Cl⁻ (Z = 17) → 17 + 1 = <b>18 électrons</b>.</p>
+</div>
+<div class="card">
+<h2>3. Isotopes</h2>
+<p>Même <b>Z</b> (même élément), mais <b>N différent</b> (donc A différent). Ex : ¹²C (6 n), ¹³C (7 n), ¹⁴C (8 n).<br>Ils ont les mêmes propriétés chimiques (mêmes électrons).</p>
+<p>La masse molaire du tableau est une <b>moyenne</b> pondérée par l'abondance :</p>
+<span class="fb">M = x₁·M₁ + x₂·M₂ + …   (x = abondance en fraction)</span>
+<p>Ex chlore : 75,8 % de ³⁵Cl et 24,2 % de ³⁷Cl → M = 0,758×35 + 0,242×37 ≈ 35,5 g/mol.</p>
+</div>
+<div class="card">
+<h2>4. Configuration électronique</h2>
+<p>Les électrons se rangent en couches (n = 1, 2, 3…) et sous-couches s (2 e⁻ max), p (6), d (10), f (14).</p>
+<p><b>Règle de Klechkowski</b> (ordre de remplissage) :</p>
+<span class="fb">1s 2s 2p 3s 3p 4s 3d 4p 5s 4d 5p 6s 4f 5d 6p 7s…</span>
+<p>Ex Fe (Z = 26) : 1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d⁶. Exceptions : Cr (3d⁵ 4s¹), Cu (3d¹⁰ 4s¹).</p>
+<p>Ancienne notation (lycée, Z ≤ 18) : couches K (2 max), L (8), M (8). Ex Na : K² L⁸ M¹.</p>
+<p><b>Électrons de valence</b> = ceux de la dernière couche. Ce sont eux qui font la chimie (liaisons, ions).</p>
+</div>
+<div class="card">
+<h2>5. Le tableau périodique</h2>
+<p>Classé par <b>Z croissant</b>.<br>
+<b>Ligne (période)</b> = numéro de la dernière couche occupée.<br>
+<b>Colonne (groupe)</b> = même nombre d'électrons de valence → mêmes propriétés chimiques (famille).</p>
+<p>Familles : alcalins (col. 1), alcalino-terreux (2), métaux de transition (3 à 12), halogènes (17), gaz nobles (18, très stables, ne réagissent presque pas).</p>
+<p><b>Électronégativité</b> : tendance d'un atome à attirer les électrons. Elle augmente vers la <b>droite</b> et vers le <b>haut</b> (le fluor est le plus électronégatif). Grande différence d'électronégativité → liaison ionique ; petite → liaison covalente.</p>
+</div>
+<div class="card">
+<h2>6. La mole</h2>
+<span class="fb">n = m / M      N_entités = n × N_A</span>
+<p>n en mol, m en g, M en g/mol, N<sub>A</sub> = 6,022×10²³ mol⁻¹.<br>Masse d'un atome : m = M / N<sub>A</sub>.</p>
+</div>
+</section>
+</main>
+
+<script>
+const NA=6.022e23, PI=Math.PI;
+const S={
+ cs:{nom:"Cubique simple (CS)",N:1,coord:6,
+   comptage:"8 sommets × 1/8 = 1",
+   contact:"Les atomes se touchent le long d'une <b>arête</b> du cube : sur une longueur a on a 2 rayons.",
+   rel:"a = 2r", aR:r=>2*r, rA:a=>a/2, relDet:"a = 2 × r", relDetInv:"r = a / 2",
+   Cth:"π/6 ≈ 0,524"},
+ cc:{nom:"Cubique centré (CC)",N:2,coord:8,
+   comptage:"8 sommets × 1/8 + 1 au centre × 1 = 1 + 1 = 2",
+   contact:"Les atomes se touchent le long de la <b>grande diagonale du cube</b> (longueur a√3) : sommet + atome central + sommet = r + 2r + r = 4r.",
+   rel:"a√3 = 4r", aR:r=>4*r/Math.sqrt(3), rA:a=>a*Math.sqrt(3)/4, relDet:"a = 4r / √3", relDetInv:"r = a√3 / 4",
+   Cth:"π√3/8 ≈ 0,680"},
+ cfc:{nom:"Cubique faces centrées (CFC)",N:4,coord:12,
+   comptage:"8 sommets × 1/8 + 6 faces × 1/2 = 1 + 3 = 4",
+   contact:"Les atomes se touchent le long de la <b>diagonale d'une face</b> (longueur a√2) : sommet + atome de face + sommet = r + 2r + r = 4r.",
+   rel:"a√2 = 4r", aR:r=>4*r/Math.SQRT2, rA:a=>a*Math.SQRT2/4, relDet:"a = 4r / √2 = 2√2·r", relDetInv:"r = a√2 / 4",
+   Cth:"π√2/6 ≈ 0,740"},
+ hc:{nom:"Hexagonal compact (HC)",N:6,coord:12,
+   comptage:"12 sommets × 1/6 + 2 centres de base × 1/2 + 3 atomes intérieurs × 1 = 2 + 1 + 3 = 6 (prisme hexagonal)",
+   contact:"Les atomes se touchent le long d'une <b>arête de l'hexagone</b> : a = 2r. Pour un empilement idéal, c = √(8/3)·a ≈ 1,633·a.",
+   rel:"a = 2r", aR:r=>2*r, rA:a=>a/2, relDet:"a = 2 × r", relDetInv:"r = a / 2",
+   Cth:"π/(3√2) ≈ 0,740"},
+ diam:{nom:"Diamant (CFC + 4 sites tétra.)",N:8,coord:4,
+   comptage:"8 sommets × 1/8 + 6 faces × 1/2 + 4 intérieurs × 1 = 1 + 3 + 4 = 8",
+   contact:"Les atomes se touchent sur <b>1/4 de la grande diagonale</b> : a√3/4 = 2r.",
+   rel:"a√3 = 8r", aR:r=>8*r/Math.sqrt(3), rA:a=>a*Math.sqrt(3)/8, relDet:"a = 8r / √3", relDetInv:"r = a√3 / 8",
+   Cth:"π√3/16 ≈ 0,340"}
+};
+const U={pm:1e-12,nm:1e-9,"Å":1e-10};
+const EX=[
+ ["Fer α (CC)","cc",124.1,55.85],["Chrome (CC)","cc",124.9,52.00],["Tungstène (CC)","cc",137.1,183.84],["Sodium (CC)","cc",186,22.99],
+ ["Cuivre (CFC)","cfc",127.8,63.55],["Aluminium (CFC)","cfc",143.2,26.98],["Or (CFC)","cfc",144.2,196.97],["Nickel (CFC)","cfc",124.6,58.69],["Fer γ (CFC)","cfc",129,55.85],
+ ["Magnésium (HC)","hc",160,24.31],["Titane (HC)","hc",147,47.87],["Zinc (HC)","hc",133.5,65.38]
+];
+const $=id=>document.getElementById(id);
+const num=v=>parseFloat(String(v).replace(",","."));
+function fr(x,p=4){if(!isFinite(x))return"—";return Number(x.toPrecision(p)).toLocaleString("fr-FR",{maximumFractionDigits:6})}
+function sci(x,p=4){if(!isFinite(x))return"—";if(x!==0&&(Math.abs(x)<1e-3||Math.abs(x)>=1e6)){let e=Math.floor(Math.log10(Math.abs(x)));let m=x/10**e;if(Math.abs(Number(m.toPrecision(p)))>=10){m/=10;e++}return fr(m,p)+" × 10<sup>"+e+"</sup>"}return fr(x,p)}
+function step(t,body){return `<div class="step"><b class="t">${t}</b><br>${body}</div>`}
+
+// fill selects
+document.querySelectorAll(".stsel").forEach(s=>{for(const k in S)s.add(new Option(S[k].nom,k));s.value="cfc"});
+document.querySelectorAll(".usel").forEach(s=>{for(const k in U)s.add(new Option(k,k))});
+$("c_ex").add(new Option("— Aucun —",""));EX.forEach((e,i)=>$("c_ex").add(new Option(e[0],i)));
+
+// nav
+$("nav").onclick=e=>{const b=e.target.closest("button");if(!b)return;document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===b));document.querySelectorAll("section").forEach(s=>s.classList.toggle("on",s.id===b.dataset.s));scrollTo(0,0)};
+
+let know="r";
+$("c_know").onclick=e=>{const b=e.target.closest("button");if(!b)return;know=b.dataset.v;[...$("c_know").children].forEach(x=>x.classList.toggle("on",x===b));$("c_lab").textContent=know=="r"?"Rayon atomique r":"Paramètre de maille a"};
+$("c_st").onchange=()=>{$("c_hcbox").style.display=$("c_st").value=="hc"?"block":"none"};
+$("c_ex").onchange=()=>{const e=EX[$("c_ex").value];if(!e)return;$("c_st").value=e[1];$("c_st").onchange();know="r";[...$("c_know").children].forEach(x=>x.classList.toggle("on",x.dataset.v=="r"));$("c_lab").textContent="Rayon atomique r";$("c_val").value=e[2];$("c_u").value="pm";$("c_M").value=e[3]};
+
+function volMaille(k,a,c){return k=="hc"?1.5*Math.sqrt(3)*a*a*c:a**3}
+
+// ===== CALC =====
+$("c_go").onclick=()=>{
+ const k=$("c_st").value,st=S[k],u=$("c_u").value,f=U[u],v=num($("c_val").value),M=num($("c_M").value);
+ if(!(v>0)){$("c_out").innerHTML=`<div class="card">Entre une valeur de ${know=="r"?"r":"a"}.</div>`;return}
+ let h=`<div class="card"><h2>${st.nom} — résolution</h2>`;
+ h+=step("① Multiplicité N",`On compte les atomes qui appartiennent à la maille :<span class="fb">N = ${st.comptage}</span><span class="why">Un atome au sommet est partagé par 8 mailles (1/8), sur une face par 2 (1/2), à l'intérieur il compte entier.</span>`);
+ let r,a;
+ if(know=="r"){r=v*f;a=st.aR(r);
+  h+=step("② Paramètre de maille a",`${st.contact}<span class="fb">${st.rel} ⇒ ${st.relDet}</span>On convertit r en mètres : r = ${fr(v)} ${u} = ${sci(r)} m<span class="fb">a = ${sci(a)} m  (= ${fr(a/f)} ${u})</span>`);
+ }else{a=v*f;r=st.rA(a);
+  h+=step("② Rayon atomique r",`${st.contact}<span class="fb">${st.rel} ⇒ ${st.relDetInv}</span>On convertit a en mètres : a = ${fr(v)} ${u} = ${sci(a)} m<span class="fb">r = ${sci(r)} m  (= ${fr(r/f)} ${u})</span>`);}
+ let V,c;
+ if(k=="hc"){const cv=num($("c_c").value);c=cv>0?cv*f:a*Math.sqrt(8/3);
+  V=volMaille(k,a,c);
+  h+=step("③ Volume de la maille",`Prisme hexagonal = aire de l'hexagone × hauteur. Aire de l'hexagone = 6 triangles équilatéraux = (3√3/2)·a².<br>${cv>0?"c donné":"c idéal = √(8/3)·a = 1,633·a"} = ${sci(c)} m<span class="fb">V = (3√3/2)·a²·c = ${sci(V)} m³</span>`);
+ }else{V=a**3;
+  h+=step("③ Volume de la maille",`La maille est un cube d'arête a :<span class="fb">V = a³ = (${sci(a)})³ = ${sci(V)} m³</span><span class="why">On élève aussi la puissance de 10 au cube.</span>`);}
+ const Vat=4/3*PI*r**3,C=st.N*Vat/V;
+ h+=step("④ Compacité C",`Volume d'un atome (sphère) : V<sub>at</sub> = (4/3)πr³ = ${sci(Vat)} m³<span class="fb">C = N × V_at / V = ${st.N} × ${sci(Vat)} / ${sci(V)}</span><span class="res">C = ${fr(C,3)} soit ${fr(C*100,3)} %</span><br><span class="why">Valeur théorique : ${st.Cth}. Le reste (${fr((1-C)*100,3)} %) est du vide entre les atomes. C ne dépend pas du métal, seulement de la structure.</span>`);
+ if(M>0){const Mk=M/1000,m1=Mk/NA,rho=st.N*m1/V;
+  h+=step("⑤ Masse d'un atome",`M = ${fr(M)} g/mol = ${sci(Mk)} kg/mol<span class="fb">m_atome = M / N_A = ${sci(Mk)} / 6,022×10²³ = ${sci(m1)} kg</span>`);
+  h+=step("⑥ Masse volumique ρ",`Masse de la maille / volume de la maille :<span class="fb">ρ = N × M / (N_A × V) = ${st.N} × ${sci(Mk)} / (6,022×10²³ × ${sci(V)})</span>Ce qui revient au même que d'utiliser la masse d'un atome de l'étape ⑤ (m = M / N<sub>A</sub>, N<sub>A</sub> déjà pris en compte) :<span class="fb">ρ = N × m_atome / V = ${st.N} × ${sci(m1)} / ${sci(V)}</span><span class="res">ρ = ${fr(rho)} kg/m³ = ${fr(rho/1000)} g/cm³</span><br><span class="why">Vérif : un métal est en général entre 1 000 et 22 000 kg/m³.${rho<500||rho>25000?" ⚠️ Ton résultat sort de cette plage : vérifie les unités !":" ✅ Ordre de grandeur cohérent."}</span>`);
+ }else h+=`<p class="why">Ajoute la masse molaire M pour obtenir la masse volumique.</p>`;
+ h+=step("Coordinence",`Chaque atome a <b>${st.coord}</b> plus proches voisins.`);
+ $("c_out").innerHTML=h+"</div>";$("c_out").scrollIntoView({behavior:"smooth"});
+};
+
+function rhoSI(v,u){return u=="g"?v*1000:v}
+
+// ===== INVERSE =====
+$("i_go").onclick=()=>{
+ const k=$("i_st").value,st=S[k],rho=rhoSI(num($("i_rho").value),$("i_ru").value),M=num($("i_M").value);
+ if(!(rho>0&&M>0)){$("i_out").innerHTML=`<div class="card">Entre ρ et M.</div>`;return}
+ const Mk=M/1000;let h=`<div class="card"><h2>${st.nom} — a et r depuis ρ</h2>`;
+ h+=step("① Données en unités SI",`ρ = ${fr(rho)} kg/m³ ; M = ${sci(Mk)} kg/mol ; N = ${st.N} (${st.comptage})`);
+ let a,V;
+ if(k=="hc"){V=st.N*Mk/(NA*rho);a=Math.cbrt(V/(1.5*Math.sqrt(3)*Math.sqrt(8/3)));
+  h+=step("② Volume de la maille",`On isole V dans ρ = N·M/(N_A·V) :<span class="fb">V = N·M / (N_A·ρ) = ${sci(V)} m³</span>`);
+  h+=step("③ Paramètre a",`Avec c = 1,633·a : V = (3√3/2)·1,633·a³ ≈ 4,243·a³<span class="fb">a = ∛(V / 4,243)</span><span class="res">a = ${sci(a)} m = ${fr(a/1e-12)} pm</span>`);
+ }else{V=st.N*Mk/(NA*rho);a=Math.cbrt(V);
+  h+=step("② Volume de la maille",`On isole a³ dans ρ = N·M/(N_A·a³) :<span class="fb">a³ = N·M / (N_A·ρ) = ${st.N} × ${sci(Mk)} / (6,022×10²³ × ${fr(rho)}) = ${sci(V)} m³</span>`);
+  h+=step("③ Paramètre a",`On prend la racine cubique (touche x^(1/3) ou ∛ sur la calculatrice) :<span class="res">a = ${sci(a)} m = ${fr(a/1e-12)} pm</span>`);}
+ const r=st.rA(a);
+ h+=step("④ Rayon r",`${st.contact}<span class="fb">${st.relDetInv}</span><span class="res">r = ${sci(r)} m = ${fr(r/1e-12)} pm</span>`);
+ $("i_out").innerHTML=h+"</div>";$("i_out").scrollIntoView({behavior:"smooth"});
+};
+
+// ===== IDENTIFY =====
+$("d_go").onclick=()=>{
+ const r=num($("d_r").value)*U[$("d_u").value],M=num($("d_M").value),rm=rhoSI(num($("d_rho").value),$("d_ru").value);
+ if(!(r>0&&M>0&&rm>0)){$("d_out").innerHTML=`<div class="card">Remplis r, M et ρ.</div>`;return}
+ const Mk=M/1000;let rows=[],best=null;
+ for(const k of ["cs","cc","cfc","hc"]){const st=S[k],a=st.aR(r),V=volMaille(k,a,a*Math.sqrt(8/3)),rho=st.N*Mk/(NA*V),ec=Math.abs(rho-rm)/rm*100;rows.push({k,st,a,rho,ec});if(!best||ec<best.ec)best=rows[rows.length-1]}
+ let h=`<div class="card"><h2>Comparaison</h2><p class="why">Pour chaque structure : a = f(r), puis ρ = N·M/(N_A·V). On compare à ρ mesurée = ${fr(rm)} kg/m³.</p><table><tr><th>Structure</th><th>N</th><th>a (pm)</th><th>ρ calc. (kg/m³)</th><th>Écart</th></tr>`;
+ rows.forEach(o=>h+=`<tr class="${o===best?"best":""}"><td>${o.st.nom}</td><td>${o.st.N}</td><td>${fr(o.a/1e-12)}</td><td>${fr(o.rho)}</td><td>${fr(o.ec,3)} %</td></tr>`);
+ h+=`</table><p>👉 La structure la plus probable est <span class="best">${best.st.nom}</span> (écart ${fr(best.ec,3)} %).</p><div class="tip"><b>À écrire sur la copie :</b> « La masse volumique calculée en ${best.st.nom.match(/\((.*)\)/)[1]} (${fr(best.rho)} kg/m³) est la plus proche de la valeur mesurée, donc le métal cristallise en ${best.st.nom.match(/\((.*)\)/)[1]}. » Note : CFC et HC ont la même compacité, donc presque la même ρ — si les deux sont proches, c'est l'énoncé qui tranche.</div></div>`;
+ $("d_out").innerHTML=h;$("d_out").scrollIntoView({behavior:"smooth"});
+};
+
+// ===== DRAWINGS =====
+const COL={s:"#7fa6c4",f:"#f2a93b",c:"#ef6b6b",i:"#6fd08c",e:"#c58af0"};
+function P(x,y,z){return[40+150*x+70*z,210-150*y-55*z]}
+function cube(atoms,bonds){
+ let s=`<svg viewBox="0 0 270 230">`;const E=[[0,0,0,1,0,0],[0,0,0,0,1,0],[0,0,0,0,0,1],[1,1,1,0,1,1],[1,1,1,1,0,1],[1,1,1,1,1,0],[1,0,0,1,1,0],[1,0,0,1,0,1],[0,1,0,1,1,0],[0,1,0,0,1,1],[0,0,1,1,0,1],[0,0,1,0,1,1]];
+ E.forEach(e=>{const p=P(e[0],e[1],e[2]),q=P(e[3],e[4],e[5]);s+=`<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" stroke="#56707f" stroke-width="1.5"/>`});
+ (bonds||[]).forEach(b=>{const p=P(...b[0]),q=P(...b[1]);s+=`<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" stroke="#4fc3c9" stroke-width="2.5" stroke-dasharray="6 4"/>`});
+ atoms.sort((A,B)=>B[2]-A[2]).forEach(t=>{const p=P(t[0],t[1],t[2]);s+=`<circle cx="${p[0]}" cy="${p[1]}" r="11" fill="${COL[t[3]]}" stroke="#0f1a23" stroke-width="1.5"/>`});
+ return s+"</svg>";
+}
+const corners=[];for(const x of[0,1])for(const y of[0,1])for(const z of[0,1])corners.push([x,y,z,"s"]);
+const faces=[[.5,.5,0],[.5,.5,1],[.5,0,.5],[.5,1,.5],[0,.5,.5],[1,.5,.5]].map(p=>[...p,"f"]);
+function hcSvg(){
+ let s=`<svg viewBox="0 0 270 240">`;const cx=135,R=85,yb=205,yt=60,k=.32;
+ const pt=(ang,y,rr=R)=>[cx+rr*Math.cos(ang*PI/180),y+rr*k*Math.sin(ang*PI/180)];
+ for(let i=0;i<6;i++){const a=i*60,b=a+60;for(const y of[yb,yt]){const p=pt(a,y),q=pt(b,y);s+=`<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" stroke="#56707f" stroke-width="1.5"/>`}const p=pt(a,yb),q=pt(a,yt);s+=`<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" stroke="#56707f" stroke-width="1.5"/>`}
+ const at=[];for(let i=0;i<6;i++){at.push([...pt(i*60,yb),"s"]);at.push([...pt(i*60,yt),"s"])}
+ at.push([cx,yb,"f"],[cx,yt,"f"]);[30,150,270].forEach(a=>at.push([...pt(a,(yb+yt)/2,R/Math.sqrt(3)),"i"]));
+ at.sort((A,B)=>A[1]-B[1]).forEach(t=>s+=`<circle cx="${t[0]}" cy="${t[1]}" r="11" fill="${COL[t[2]]}" stroke="#0f1a23" stroke-width="1.5"/>`);
+ return s+"</svg>";
+}
+const leg=`<div class="leg"><span><i style="background:${COL.s}"></i>sommet</span><span><i style="background:${COL.f}"></i>face / base</span><span><i style="background:${COL.c}"></i>centre</span><span><i style="background:${COL.i}"></i>intérieur</span><span><i style="background:#4fc3c9;border-radius:2px;height:3px"></i>ligne de contact</span></div>`;
+const DRAW={
+ cs:()=>cube([...corners],[[[0,0,0],[1,0,0]]]),
+ cc:()=>cube([...corners,[.5,.5,.5,"c"]],[[[0,0,0],[1,1,1]]]),
+ cfc:()=>cube([...corners,...faces],[[[0,0,1],[1,1,1]]]),
+ hc:hcSvg,
+ diam:()=>cube([...corners,...faces,[.25,.25,.25,"i"],[.75,.75,.25,"i"],[.75,.25,.75,"i"],[.25,.75,.75,"i"]],[[[0,0,0],[.25,.25,.25]]])
+};
+function showStruct(){const k=$("s_st").value,st=S[k];
+ $("s_out").innerHTML=`<div class="card"><h2>${st.nom}</h2>${DRAW[k]()}${leg}
+ <h3>Multiplicité</h3><span class="fb">N = ${st.comptage}</span>
+ <h3>Contact</h3><p>${st.contact}</p><span class="fb">${st.rel}  ⇒  ${st.relDet}</span>
+ <h3>Compacité</h3><p>C = ${st.Cth}</p>
+ <h3>Coordinence</h3><p>${st.coord} plus proches voisins</p></div>`}
+$("s_st").onchange=showStruct;showStruct();
+</script>
+<script>
+{
+const RAW="H,Hydrogène,1.008;He,Hélium,4.003;Li,Lithium,6.94;Be,Béryllium,9.012;B,Bore,10.81;C,Carbone,12.011;N,Azote,14.007;O,Oxygène,15.999;F,Fluor,18.998;Ne,Néon,20.180;Na,Sodium,22.990;Mg,Magnésium,24.305;Al,Aluminium,26.982;Si,Silicium,28.085;P,Phosphore,30.974;S,Soufre,32.06;Cl,Chlore,35.45;Ar,Argon,39.948;K,Potassium,39.098;Ca,Calcium,40.078;Sc,Scandium,44.956;Ti,Titane,47.867;V,Vanadium,50.942;Cr,Chrome,51.996;Mn,Manganèse,54.938;Fe,Fer,55.845;Co,Cobalt,58.933;Ni,Nickel,58.693;Cu,Cuivre,63.546;Zn,Zinc,65.38;Ga,Gallium,69.723;Ge,Germanium,72.630;As,Arsenic,74.922;Se,Sélénium,78.971;Br,Brome,79.904;Kr,Krypton,83.798;Rb,Rubidium,85.468;Sr,Strontium,87.62;Y,Yttrium,88.906;Zr,Zirconium,91.224;Nb,Niobium,92.906;Mo,Molybdène,95.95;Tc,Technétium,98;Ru,Ruthénium,101.07;Rh,Rhodium,102.91;Pd,Palladium,106.42;Ag,Argent,107.87;Cd,Cadmium,112.41;In,Indium,114.82;Sn,Étain,118.71;Sb,Antimoine,121.76;Te,Tellure,127.60;I,Iode,126.90;Xe,Xénon,131.29;Cs,Césium,132.91;Ba,Baryum,137.33;La,Lanthane,138.91;Ce,Cérium,140.12;Pr,Praséodyme,140.91;Nd,Néodyme,144.24;Pm,Prométhium,145;Sm,Samarium,150.36;Eu,Europium,151.96;Gd,Gadolinium,157.25;Tb,Terbium,158.93;Dy,Dysprosium,162.50;Ho,Holmium,164.93;Er,Erbium,167.26;Tm,Thulium,168.93;Yb,Ytterbium,173.05;Lu,Lutécium,174.97;Hf,Hafnium,178.49;Ta,Tantale,180.95;W,Tungstène,183.84;Re,Rhénium,186.21;Os,Osmium,190.23;Ir,Iridium,192.22;Pt,Platine,195.08;Au,Or,196.97;Hg,Mercure,200.59;Tl,Thallium,204.38;Pb,Plomb,207.2;Bi,Bismuth,208.98;Po,Polonium,209;At,Astate,210;Rn,Radon,222;Fr,Francium,223;Ra,Radium,226;Ac,Actinium,227;Th,Thorium,232.04;Pa,Protactinium,231.04;U,Uranium,238.03;Np,Neptunium,237;Pu,Plutonium,244;Am,Américium,243;Cm,Curium,247;Bk,Berkélium,247;Cf,Californium,251;Es,Einsteinium,252;Fm,Fermium,257;Md,Mendélévium,258;No,Nobélium,259;Lr,Lawrencium,266;Rf,Rutherfordium,267;Db,Dubnium,268;Sg,Seaborgium,269;Bh,Bohrium,270;Hs,Hassium,269;Mt,Meitnérium,278;Ds,Darmstadtium,281;Rg,Roentgenium,282;Cn,Copernicium,285;Nh,Nihonium,286;Fl,Flérovium,289;Mc,Moscovium,290;Lv,Livermorium,293;Ts,Tennesse,294;Og,Oganesson,294";
+const E=[null];RAW.split(";").forEach((s,i)=>{const p=s.split(",");E.push({Z:i+1,sym:p[0],nom:p[1],M:+p[2]})});
+const AOV={28:58,29:63,30:64,32:74,34:80,35:79,42:98,44:102,48:114,50:120,52:130,54:132,56:138,60:142,62:152,63:153,64:158,66:164,68:166,70:174,72:180,75:187,76:192,77:193,80:202,81:205,82:208};
+const Atyp=z=>AOV[z]||Math.round(E[z].M);
+const NOBLE=[2,10,18,36,54,86,118];
+const norm=s=>s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").trim();
+function findEl(t){t=String(t).trim();if(!t)return null;if(/^\d+$/.test(t)){const z=+t;return z>=1&&z<=118?z:-1}const n=norm(t);for(let z=1;z<=118;z++)if(E[z].sym.toLowerCase()==n||norm(E[z].nom)==n)return z;return -1}
+function pos(z){const st=[0,2,10,18,36,54,86,118];let p=1;while(z>st[p])p++;const i=z-st[p-1]-1;let g,f=null;
+ if(p==1)g=z==1?1:18;else if(p<=3)g=[1,2,13,14,15,16,17,18][i];else if(p<=5)g=i+1;else{if(i<2)g=i+1;else if(i<=16){g=3;f=i-2}else g=i-13}
+ return{p,g,f}}
+function fam(z){const{g,f}=pos(z);if(NOBLE.includes(z))return"gn";if([9,17,35,53,85,117].includes(z))return"hal";if([1,6,7,8,15,16,34].includes(z))return"nm";if([5,14,32,33,51,52].includes(z))return"mld";if(f!==null)return z<89?"lan":"act";if(g==1)return"alc";if(g==2)return"at";if(g>=3&&g<=12)return"tr";return"mp"}
+const FAM={alc:["Métal alcalin","#e88a8a"],at:["Alcalino-terreux","#f2b66d"],tr:["Métal de transition","#e9d56f"],mp:["Métal pauvre","#9fb6c3"],mld:["Métalloïde","#a6cf8c"],nm:["Non-métal","#7db7ef"],hal:["Halogène","#62d2df"],gn:["Gaz noble","#c193dd"],lan:["Lanthanide","#f3a2c2"],act:["Actinide","#d6a6e0"]};
+const $=id=>document.getElementById(id);
+const fr=(x,p=4)=>Number(x.toPrecision(p)).toLocaleString("fr-FR",{maximumFractionDigits:6});
+const sci=(x,p=4)=>{if(x===0)return"0";let e=Math.floor(Math.log10(Math.abs(x)));let m=x/10**e;if(Math.abs(Number(m.toPrecision(p)))>=10){m/=10;e++}return(Math.abs(e)<3?fr(x,p):fr(m,p)+" × 10<sup>"+e+"</sup>")};
+const step=(t,b)=>`<div class="step"><b class="t">${t}</b><br>${b}</div>`;
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const qtxt=q=>q==0?"":(Math.abs(q)==1?"":Math.abs(q))+(q>0?"+":"−");
+const nuc=(A,Z,sym,q)=>`<span class="nuc"><span class="ns"><span>${A??"?"}</span><span>${Z??"?"}</span></span>${sym}${q?`<sup class="q">${qtxt(q)}</sup>`:""}</span>`;
+const SUPN={"0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹"};
+const sup=n=>String(n).split("").map(c=>SUPN[c]).join("");
+// configuration
+const ORD=["1s","2s","2p","3s","3p","4s","3d","4p","5s","4d","5p","6s","4f","5d","6p","7s","5f","6d","7p"];
+const CAP={s:2,p:6,d:10,f:14};
+const EXC={24:["4s","3d",1],29:["4s","3d",1],42:["5s","4d",1],47:["5s","4d",1],79:["6s","5d",1],46:["5s","4d",2]};
+function config(ne){const c=[];let r=ne;for(const s of ORD){if(r<=0)break;const k=Math.min(CAP[s[1]],r);c.push([s,k]);r-=k}return c}
+function configZ(z){const c=config(z);const x=EXC[z];if(x){const a=c.find(s=>s[0]==x[0]),b=c.find(s=>s[0]==x[1]);a[1]-=x[2];b[1]+=x[2];return[c.filter(s=>s[1]>0),true]}return[c,false]}
+const cfgStr=c=>c.map(s=>`${s[0]}${sup(s[1])}`).join(" ");
+function abbr(c,ne){const g=[...NOBLE].reverse().find(n=>n<ne);if(!g)return cfgStr(c);let t=0,i=0;while(i<c.length&&t<g){t+=c[i][1];i++}return t==g?`[${E[g].sym}] `+cfgStr(c.slice(i)):cfgStr(c)}
+function shells(c){const n={};c.forEach(s=>n[s[0][0]]=(n[s[0][0]]||0)+s[1]);return n}
+function ionCfg(z,q){if(q<=0)return config(z-q);let c=configZ(z)[0].map(s=>[...s]);const L="spdf";let r=q;
+ const ordr=[...c].sort((a,b)=>b[0][0]-a[0][0]||L.indexOf(b[0][1])-L.indexOf(a[0][1]));for(const s of ordr){while(r>0&&s[1]>0){s[1]--;r--}}return c.filter(s=>s[1]>0)}
+const TM={21:[3],22:[2,3,4],23:[2,3],24:[2,3],25:[2],26:[2,3],27:[2,3],28:[2],29:[1,2],30:[2],47:[1],48:[2],79:[1,3],80:[2],78:[2],46:[2],50:[2,4],82:[2,4],83:[3],51:[3]};
+function ionOf(z){const{g,p}=pos(z),f=fam(z),el=E[z];const[c]=configZ(z),sh=shells(c),nmax=Math.max(...Object.keys(sh).map(Number)),v=sh[nmax];
+ if(NOBLE.includes(z))return{q:[],t:`${el.nom} est un <b>gaz noble</b> : sa couche externe est déjà complète (${v} électrons). Il est stable et ne forme pas d'ion.`};
+ if(z==1)return{q:[1],t:`H a 1 électron. Il le perd souvent → <b>H⁺</b> (simple proton). Il peut aussi en gagner 1 (H⁻, ion hydrure) pour avoir 2 électrons comme l'hélium (règle du duet).`};
+ if(TM[z]&&(f=="tr"||f=="mp"))return{q:TM[z],t:`${el.nom} ${f=="tr"?"est un métal de transition : il ne suit pas la règle de l'octet et ":""}forme ${TM[z].length>1?"plusieurs ions":"l'ion"} ${TM[z].map(q=>"<b>"+el.sym+qtxt(q)+"</b>").join(", ")}. Il perd d'abord les électrons de la couche la plus externe (n = ${nmax}).`};
+ if(f=="tr"||f=="lan"||f=="act")return{q:[],t:`Métal ${FAM[f][0].toLowerCase()} : forme généralement des cations (souvent 2+ ou 3+), pas de règle simple à ce niveau.`};
+ if(g==14)return{q:[],t:`${el.sym} a 4 électrons de valence : en perdre ou en gagner 4 coûte trop d'énergie. Il fait plutôt des <b>liaisons covalentes</b> (mise en commun d'électrons).`};
+ let q;if(g<=2)q=g;else if(g==13)q=3;else q=g-18;
+ if(z==5)return{q:[],t:`B a 3 électrons de valence mais il est trop petit pour former B³⁺ : il fait des liaisons covalentes.`};
+ if((z==51||z==83)&&g==15)q=3;
+ const ne=z-q,gas=NOBLE.includes(ne)?E[ne]:null;const rule=ne==2?"du duet (2 électrons comme He)":"de l'octet (8 électrons sur la couche externe)";
+ const how=q>0?`Il a <b>${v} électron${v>1?"s":""} de valence</b>. C'est plus facile d'en <b>perdre ${q}</b> que d'en gagner ${8-v}.`:`Il a <b>${v} électrons de valence</b>. Il lui en manque ${-q} pour en avoir 8 : il en <b>gagne ${-q}</b>.`;
+ return{q:[q],t:`${how} Il forme l'ion <b>${el.sym}${qtxt(q)}</b> qui a ${ne} électrons${gas?`, comme le <b>${gas.nom}</b> (${gas.sym}) : règle ${rule}`:""}.`}}
+
+// ===== fiche élément =====
+function showEl(z,target){const el=E[z],P=pos(z),f=fam(z),A=Atyp(z),[c,ex]=configZ(z),sh=shells(c),KL="KLMNOPQ";
+ const io=ionOf(z);
+ let h=`<div class="card"><h2>${el.nom} (${el.sym})</h2><div style="text-align:center">${nuc(A,z,el.sym,0)}</div>
+ <table><tr><td>Numéro atomique Z</td><td><b>${z}</b> → ${z} protons</td></tr>
+ <tr><td>Masse molaire M</td><td><b>${fr(el.M,5)} g/mol</b></td></tr>
+ <tr><td>Isotope ${z>83?"le plus stable":"le plus abondant"}</td><td>A = ${A} → N = ${A} − ${z} = <b>${A-z} neutrons</b></td></tr>
+ <tr><td>Atome neutre</td><td>${z} électrons</td></tr>
+ <tr><td>Famille</td><td>${FAM[f][0]}</td></tr>
+ <tr><td>Position</td><td>Période ${P.p}, ${P.f!==null?"bloc f (ligne du bas)":"colonne "+P.g}</td></tr>
+ <tr><td>Masse d'un atome</td><td>M/N<sub>A</sub> = ${sci(el.M/1000/6.022e23)} kg</td></tr></table>
+ <h3>Configuration électronique</h3><span class="fb">${cfgStr(c)}</span><span class="fb">${abbr(c,z)}</span>
+ <p class="why">Remplissage selon Klechkowski : 1s 2s 2p 3s 3p 4s 3d 4p… (s : 2 max, p : 6, d : 10, f : 14).${ex?" ⚠️ <b>Exception</b> : une sous-couche d demi-remplie ou pleine est plus stable, donc un électron de s passe en d.":""}</p>
+ <p>Électrons par couche : ${Object.keys(sh).map(n=>`${KL[n-1]}(n=${n}) : ${sh[n]}`).join(" · ")}</p>
+ <h3>Ion formé</h3><p>${io.t}</p>${io.q.map(q=>`<span class="fb">${el.sym}${qtxt(q)} : ${z} p, ${A-z} n, ${z-q} e⁻ → ${cfgStr(ionCfg(z,q))}</span>`).join("")}</div>`;
+ $(target).innerHTML=h;$(target).scrollIntoView({behavior:"smooth"})}
+
+// ===== tableau =====
+const grid=$("t_grid");let gh="";
+for(let z=1;z<=118;z++){const P=pos(z),f=fam(z);const row=P.f!==null?(z<89?9:10):P.p,col=P.f!==null?P.f+3:P.g;
+ gh+=`<button class="el" data-z="${z}" style="grid-row:${row};grid-column:${col};background:${FAM[f][1]}"><small>${z}</small>${E[z].sym}</button>`}
+gh+=`<div style="grid-row:8;grid-column:1/19"></div>`;grid.innerHTML=gh;
+$("t_leg").innerHTML=Object.values(FAM).map(v=>`<span><i style="background:${v[1]}"></i>${v[0]}</span>`).join("");
+grid.onclick=e=>{const b=e.target.closest(".el");if(!b)return;grid.querySelectorAll(".el").forEach(x=>x.classList.toggle("hl",x===b));showEl(+b.dataset.z,"t_out")};
+$("t_q").oninput=()=>{const n=norm($("t_q").value);grid.querySelectorAll(".el").forEach(b=>{const el=E[b.dataset.z];const m=!n||norm(el.nom).startsWith(n)||el.sym.toLowerCase()==n||String(el.Z)==n;b.classList.toggle("dim",!m)});
+ const z=findEl($("t_q").value);if(z>0)showEl(z,"t_out")};
+
+// ===== solveur atome =====
+function parseQ(t){t=String(t).replace("−","-").replace(/\s/g,"");if(t==="")return null;if(t=="+")return 1;if(t=="-")return-1;let m=t.match(/^([+-])?(\d+)([+-])?$/);if(!m)return NaN;const s=m[1]||m[3]||"+";return(s=="-"?-1:1)*+m[2]}
+const iv=id=>{const v=$(id).value.trim();return v===""?null:parseInt(v,10)};
+$("a_clr").onclick=()=>{["a_el","a_Z","a_A","a_N","a_q","a_e"].forEach(i=>$(i).value="");$("a_out").innerHTML=""};
+$("a_go").onclick=()=>{
+ let Z=iv("a_Z"),A=iv("a_A"),N=iv("a_N"),e=iv("a_e"),q=parseQ($("a_q").value);const st=[];
+ if(Number.isNaN(q)){$("a_out").innerHTML=`<div class="card">Charge non comprise : écris par ex. 2+, 3−, -1 ou 0.</div>`;return}
+ const zel=findEl($("a_el").value);
+ if(zel==-1){$("a_out").innerHTML=`<div class="card">Élément « ${esc($("a_el").value)} » introuvable.</div>`;return}
+ if(zel){if(Z!==null&&Z!==zel)st.push(`⚠️ Tu as mis Z = ${Z} mais ${E[zel].nom} a Z = ${zel}. On garde Z = ${zel}.`);Z=zel;st.push(step("Élément → Z",`Dans le tableau périodique, ${E[zel].nom} (${E[zel].sym}) a le numéro atomique <b>Z = ${zel}</b>, donc ${zel} protons.`))}
+ let ch=true,guard=0;
+ while(ch&&guard++<10){ch=false;
+  if(Z===null&&A!==null&&N!==null){Z=A-N;st.push(step("Calcul de Z",`A = Z + N donc Z = A − N = ${A} − ${N} = <b>${Z}</b>`));ch=true}
+  if(Z===null&&e!==null&&q!==null){Z=e+q;st.push(step("Calcul de Z",`q = Z − e⁻ donc Z = e⁻ + q = ${e} + (${q}) = <b>${Z}</b>`));ch=true}
+  if(Z!==null&&A===null&&N!==null){A=Z+N;st.push(step("Calcul de A",`A = Z + N = ${Z} + ${N} = <b>${A}</b> nucléons`));ch=true}
+  if(Z!==null&&N===null&&A!==null){N=A-Z;st.push(step("Calcul de N",`N = A − Z = ${A} − ${Z} = <b>${N}</b> neutrons`));ch=true}
+  if(Z!==null&&q===null&&e!==null){q=Z-e;st.push(step("Calcul de la charge",`q = Z − e⁻ = ${Z} − ${e} = <b>${q>0?"+":""}${q}</b> → ${q>0?`il a perdu ${q} électron(s) : <b>cation</b>`:q<0?`il a gagné ${-q} électron(s) : <b>anion</b>`:"atome <b>neutre</b>"}`));ch=true}
+  if(Z!==null&&e===null&&q!==null){e=Z-q;st.push(step("Calcul du nombre d'électrons",`e⁻ = Z − q = ${Z} − (${q}) = <b>${e}</b> électrons${q>0?` (il en a perdu ${q})`:q<0?` (il en a gagné ${-q})`:""}`));ch=true}
+  if(Z===null&&e!==null&&q===null&&A===null&&N===null){q=0;Z=e;st.push(step("Hypothèse : atome neutre",`Aucune charge donnée → on suppose un atome neutre : autant de protons que d'électrons → <b>Z = ${e}</b>`));ch=true}
+ }
+ if(Z===null){
+  let h=`<div class="card"><h2>Pas assez d'infos pour trouver Z</h2>`;
+  if(N!==null||A!==null){const L=[];for(let z=1;z<=118;z++){const a=Atyp(z);if((N!==null&&a-z==N)||(A!==null&&a==A))L.push(z)}
+   h+=`<p>${N!==null?`Avec seulement N = ${N}, plusieurs éléments sont possibles. On cherche ceux dont l'isotope principal a ${N} neutrons (N = A − Z) :`:`Avec seulement A = ${A}, on cherche les éléments dont l'isotope principal a ${A} nucléons :`}</p>`;
+   h+=L.length?L.map(z=>`<span class="chip" data-z="${z}">${E[z].sym} — ${E[z].nom} (Z=${z}, A=${Atyp(z)})</span>`).join(""):"<p>Aucun isotope principal ne correspond (ce peut être un isotope plus rare).</p>";
+   h+=`<div class="tip"><b>Pourquoi plusieurs réponses ?</b> Le nombre de neutrons n'identifie pas l'élément : c'est <b>Z</b> (protons) qui le fait. Donne aussi A, Z, l'élément ou les électrons + la charge pour une réponse unique.</div>`}
+  else h+=`<p>Il faut au moins : l'élément, ou Z, ou (A et N), ou (électrons et charge), ou juste les électrons (atome neutre supposé).</p>`;
+  $("a_out").innerHTML=h+"</div>";
+  $("a_out").querySelectorAll(".chip").forEach(c=>c.onclick=()=>showEl(+c.dataset.z,"a_out"));return}
+ if(Z<1||Z>118){$("a_out").innerHTML=`<div class="card">Z = ${Z} n'existe pas (1 à 118). Vérifie tes valeurs.</div>`;return}
+ const el=E[Z];
+ if(!zel)st.unshift(step("Identification de l'élément",`Z = ${Z} → dans le tableau périodique c'est <b>${el.nom} (${el.sym})</b>. Z définit l'élément.`));
+ if(q===null&&e===null){q=0;e=Z;st.push(step("Électrons",`Pas de charge donnée → atome neutre : e⁻ = Z = <b>${Z}</b>`))}
+ if(A===null&&N===null){A=Atyp(Z);N=A-Z;st.push(step("A et N (non donnés)",`On prend l'isotope le plus courant de ${el.nom} : A = ${A} → N = A − Z = ${A} − ${Z} = <b>${N}</b> neutrons. <span class="why">(Si l'énoncé donne un autre A, utilise-le.)</span>`))}
+ const warn=[];if(A!==null&&N!==null&&A!==Z+N)warn.push(`A ≠ Z + N (${A} ≠ ${Z}+${N}) : valeurs incohérentes.`);if(N<0||e<0)warn.push("Valeur négative : vérifie les données.");
+ const kind=q==0?"Atome neutre":q>0?`Cation (ion positif) — a perdu ${q} électron${q>1?"s":""}`:`Anion (ion négatif) — a gagné ${-q} électron${q<-1?"s":""}`;
+ let h=`<div class="card"><h2>Résultat</h2><div style="text-align:center">${nuc(A,Z,el.sym,q)}</div>
+ <p style="text-align:center"><b>${el.nom}</b> — ${kind}</p>
+ ${warn.map(w=>`<div class="tip"><b>⚠️</b> ${w}</div>`).join("")}
+ <table><tr><td>Protons (Z)</td><td><b>${Z}</b></td></tr><tr><td>Neutrons (N)</td><td><b>${N}</b></td></tr><tr><td>Nucléons (A)</td><td><b>${A}</b></td></tr><tr><td>Électrons</td><td><b>${e}</b></td></tr>
+ <tr><td>Charge du noyau</td><td>Z × e = ${Z} × 1,602×10⁻¹⁹ = ${sci(Z*1.602e-19)} C</td></tr>
+ <tr><td>Charge de l'ion</td><td>q × e = ${sci(q*1.602e-19)} C</td></tr>
+ <tr><td>Masse approx.</td><td>A × 1,67×10⁻²⁷ = ${sci(A*1.67e-27)} kg</td></tr>
+ <tr><td>Configuration</td><td>${cfgStr(q==0?configZ(Z)[0]:ionCfg(Z,q))}</td></tr></table>
+ <h3>Explications pas à pas</h3>${st.join("")}
+ <button class="btn btn2" id="a_fiche">Voir la fiche complète de ${el.nom}</button></div>`;
+ $("a_out").innerHTML=h;$("a_fiche").onclick=()=>showEl(Z,"a_out");$("a_out").scrollIntoView({behavior:"smooth"})};
+
+// ===== masse molaire formule =====
+$("m_go").onclick=()=>{const f=$("m_f").value.replace(/\s/g,"");const out=$("m_out");
+ try{const tk=f.match(/[A-Z][a-z]?|\d+|\(|\)|./g)||[];let i=0;
+  function grp(){const m={};while(i<tk.length&&tk[i]!==")"){let t=tk[i++],sub;if(t=="("){sub=grp();if(tk[i++]!==")")throw"Parenthèse non fermée"}else if(/^[A-Z]/.test(t)){const z=findEl(t);if(z<=0||E[z].sym!==t)throw`« ${t} » n'est pas un symbole`;sub={[t]:1}}else throw`Caractère « ${t} » non compris`;
+   let k=1;if(/^\d+$/.test(tk[i]||""))k=+tk[i++];for(const s in sub)m[s]=(m[s]||0)+sub[s]*k}return m}
+  const m=grp();if(i<tk.length)throw"Parenthèse en trop";if(!Object.keys(m).length)throw"Formule vide";
+  let tot=0;const rows=Object.entries(m).map(([s,k])=>{const z=findEl(s),M=E[z].M;tot+=k*M;return`<tr><td>${s} (${E[z].nom})</td><td>${k} × ${fr(M,5)}</td><td>${fr(k*M,6)}</td></tr>`}).join("");
+  out.innerHTML=`<table><tr><th>Élément</th><th>Nb × M</th><th>g/mol</th></tr>${rows}</table><p class="res">M(${esc(f)}) = ${fr(tot,6)} g/mol</p><p class="why">On additionne la masse molaire de chaque atome autant de fois qu'il apparaît dans la formule (un chiffre après une parenthèse multiplie tout ce qu'elle contient).</p>`}
+ catch(err){out.innerHTML=`<p class="why">⚠️ ${esc(err)}</p>`}};
+
+// ===== tous les éléments dans "Calculer ρ" =====
+const XS={3:["cc",152],11:["cc",186],19:["cc",227],37:["cc",248],55:["cc",265],56:["cc",222],23:["cc",134],24:["cc",124.9],26:["cc",124.1],41:["cc",146],42:["cc",139],73:["cc",146],74:["cc",137.1],63:["cc",208],
+ 13:["cfc",143.2],20:["cfc",197],28:["cfc",124.6],29:["cfc",127.8],38:["cfc",215],45:["cfc",134],46:["cfc",137],47:["cfc",144.4],77:["cfc",136],78:["cfc",138.5],79:["cfc",144.2],82:["cfc",175],58:["cfc",182],70:["cfc",194],90:["cfc",180],
+ 10:["cfc",154,1],18:["cfc",188,1],36:["cfc",202,1],54:["cfc",216,1],
+ 4:["hc",112],12:["hc",160],21:["hc",162],22:["hc",147],27:["hc",125],30:["hc",133.5],39:["hc",180],40:["hc",160],43:["hc",136],44:["hc",134],48:["hc",151],72:["hc",159],75:["hc",137],76:["hc",135],81:["hc",170],64:["hc",180],65:["hc",178],66:["hc",177],67:["hc",176],68:["hc",176],69:["hc",175],71:["hc",174],2:["hc",140,1],
+ 6:["diam",77],14:["diam",118],32:["diam",122],50:["diam",140,2],84:["cs",167]};
+const SL={cs:"CS",cc:"CC",cfc:"CFC",hc:"HC",diam:"diamant"};
+const sel=$("c_ex");sel.innerHTML="";sel.add(new Option("— Choisir un élément —",""));
+for(let z=1;z<=118;z++){const x=XS[z];sel.add(new Option(`${z} · ${E[z].sym} — ${E[z].nom}${x?" ("+SL[x[0]]+")":""}`,z))}
+sel.onchange=()=>{const z=+sel.value,note=$("c_note");if(!z){note.textContent="";return}
+ $("c_M").value=E[z].M;const x=XS[z];
+ if(x){$("c_st").value=x[0];$("c_st").onchange();know="r";[...$("c_know").children].forEach(b=>b.classList.toggle("on",b.dataset.v=="r"));$("c_lab").textContent="Rayon atomique r";$("c_val").value=x[1];$("c_u").value="pm";$("c_c").value="";
+  note.innerHTML=`${E[z].nom} cristallise en <b>${S[x[0]].nom}</b>. M = ${fr(E[z].M,5)} g/mol, r ≈ ${x[1]} pm.`+(x[2]==1?" ⚠️ Gaz : il n'est solide qu'à très basse température (rayon de Van der Waals).":x[2]==2?" ⚠️ Étain gris (α), stable sous 13 °C ; l'étain blanc courant n'est pas cubique.":"")}
+ else{$("c_val").value="";note.innerHTML=`M = ${fr(E[z].M,5)} g/mol rempli. ⚠️ ${E[z].nom} n'a pas de structure CS/CC/CFC/HC/diamant simple à température ambiante (structure plus complexe, ou élément gazeux/liquide/radioactif). Choisis la structure et entre r ou a donnés par ton énoncé.`}};
+
+// ===== cristal ionique =====
+const IX={nacl:{nom:"type NaCl",N:4,pre:[102,181,22.99,35.45],ex:"Na⁺ et Cl⁻",
+  desc:"Les anions forment un réseau CFC ; les cations occupent le centre du cube et les milieux des 12 arêtes.",
+  cnt:"Anions : 8 sommets × 1/8 + 6 faces × 1/2 = 4. Cations : 12 arêtes × 1/4 + 1 centre = 4. → 4 « motifs » NaCl par maille.",
+  cont:"Cation et anion se touchent le long d'une <b>arête</b> : a = r₋ + 2r₊ + r₋… plus simplement a = 2(r₊ + r₋).",rel:"a = 2(r₊ + r₋)",a:s=>2*s,coord:"6 / 6"},
+ cscl:{nom:"type CsCl",N:1,pre:[167,181,132.91,35.45],ex:"Cs⁺ et Cl⁻",
+  desc:"Les anions sont aux 8 sommets du cube, le cation au centre (ce n'est PAS un cubique centré car les deux ions sont différents).",
+  cnt:"Anions : 8 × 1/8 = 1. Cation : 1 au centre. → 1 motif CsCl par maille.",
+  cont:"Cation et anion se touchent le long de la <b>grande diagonale</b> (a√3) : r₋ + 2r₊ + r₋ = 2(r₊ + r₋).",rel:"a√3 = 2(r₊ + r₋)",a:s=>2*s/Math.sqrt(3),coord:"8 / 8"},
+ zns:{nom:"type ZnS blende",N:4,pre:[74,184,65.38,32.06],ex:"Zn²⁺ et S²⁻",
+  desc:"Les anions forment un réseau CFC ; les cations occupent la moitié des sites tétraédriques (4 à l'intérieur du cube).",
+  cnt:"Anions : 8 × 1/8 + 6 × 1/2 = 4. Cations : 4 à l'intérieur. → 4 motifs ZnS par maille.",
+  cont:"Contact sur <b>1/4 de la grande diagonale</b> : a√3/4 = r₊ + r₋.",rel:"a√3 = 4(r₊ + r₋)",a:s=>4*s/Math.sqrt(3),coord:"4 / 4"}};
+$("x_pre").onclick=()=>{const p=IX[$("x_t").value].pre;["x_rp","x_rm","x_Mp","x_Mm"].forEach((id,i)=>$(id).value=p[i])};
+$("x_go").onclick=()=>{const t=IX[$("x_t").value],n=id=>parseFloat(String($(id).value).replace(",","."));const rp=n("x_rp"),rm=n("x_rm"),Mp=n("x_Mp"),Mm=n("x_Mm");
+ if(!(rp>0&&rm>0&&Mp>0&&Mm>0)){$("x_out").innerHTML=`<div class="card">Remplis les 4 cases (ou touche « Remplir avec l'exemple type »).</div>`;return}
+ const s=(rp+rm)*1e-12,a=t.a(s),V=a**3,Mk=(Mp+Mm)/1000,rho=t.N*Mk/(6.022e23*V),C=t.N*4/3*Math.PI*((rp*1e-12)**3+(rm*1e-12)**3)/V;
+ let h=`<div class="card"><h2>Cristal ${t.nom}</h2><p class="why">${t.desc}</p>`;
+ h+=step("① Nombre de motifs par maille",t.cnt);
+ h+=step("② Paramètre de maille a",`${t.cont}<span class="fb">${t.rel}</span>r₊ + r₋ = ${fr(rp)} + ${fr(rm)} = ${fr(rp+rm)} pm<span class="fb">a = ${fr(a/1e-12)} pm = ${sci(a)} m</span>`);
+ h+=step("③ Volume",`V = a³ = ${sci(V)} m³`);
+ h+=step("④ Compacité",`On compte le volume des deux types d'ions :<span class="fb">C = N × (4/3)π(r₊³ + r₋³) / a³</span><span class="res">C = ${fr(C,3)} (${fr(C*100,3)} %)</span>`);
+ h+=step("⑤ Masse volumique",`M(motif) = M₊ + M₋ = ${fr(Mp)} + ${fr(Mm)} = ${fr(Mp+Mm)} g/mol = ${sci(Mk)} kg/mol<span class="fb">ρ = N × M / (N_A × a³) = ${t.N} × ${sci(Mk)} / (6,022×10²³ × ${sci(V)})</span><span class="res">ρ = ${fr(rho)} kg/m³ = ${fr(rho/1000)} g/cm³</span>`);
+ h+=step("Coordinence",`cation / anion : ${t.coord}`);
+ $("x_out").innerHTML=h+"</div>";$("x_out").scrollIntoView({behavior:"smooth"})};
+}
+</script>
+<script>if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
+</body>
+</html>
